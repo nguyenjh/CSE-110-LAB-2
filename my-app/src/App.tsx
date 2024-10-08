@@ -9,6 +9,8 @@ import ToggleTheme, { ClickCounter } from './hookExercise';
 const initList: Note[] = [];
 
 function App() {
+
+    // Create new Note
     const [notes, setNotes] = useState(dummyNotesList); 
     const initialNote = {
         id: -1,
@@ -29,8 +31,35 @@ function App() {
         })
     }
 
-    // console.log(notes)
+    // Update Notes
+    const [selectedNote, setSelectedNote] = useState<Note>(initialNote);
+    const handleEdit = (note: Note, field: string, value: string) => {
+        setSelectedNote(note)
 
+        console.log("in handleEdit")
+        if (field === "title") {
+            setSelectedNote({...selectedNote, title: value});
+        }
+        if (field === "content") {
+            setSelectedNote({...selectedNote, content: value});
+        }
+        if (field === "label") {
+            setSelectedNote({...selectedNote, label: value as Label})
+        }
+    }
+
+    
+    // Delet Notes
+    const handleDelete = (note: Note) => {
+        setNotes(() => {
+            return notes.filter((id) => id !== note);
+        })
+        setFavoriteList((favoriteList) => {
+            return favoriteList.filter((id) => id !== note);
+        });
+    }
+
+    // Favorite Notes
     const [favoriteList, setFavoriteList] = useState(initList);
 
     const toggleFavorite = (note: Note) => {
@@ -45,7 +74,7 @@ function App() {
             }
         });
     };
-    
+
     return (
         <div className='app-container'>
             <form className="note-form" onSubmit={createNoteHandler} action='#'>
@@ -94,11 +123,33 @@ function App() {
                         >
                             Favorite
                         </button>
-                        <button>x</button>
+                        <button
+                            onClick={() => handleDelete(note)}
+                        >x</button>
                     </div>
-                    <h2> {note.title} </h2>
-                    <p> {note.content} </p>
-                    <p> {note.label} </p>
+                    <h2 contentEditable="true" onInput={(e) => {
+                        handleEdit(note, "title", e.currentTarget.innerHTML)
+                        console.log("title edited");
+                    }}> {note.title} </h2>
+                    <p contentEditable="true" onInput={(e) => {
+                        handleEdit(note, "content", e.currentTarget.innerHTML)
+                        console.log("content");
+                    }}> {note.content} </p>
+                    {/* <p contentEditable="true" onInput={(e) => {
+                        handleEdit(note, "label", e.currentTarget.innerHTML)
+                        console.log("title edited");
+                    }}> {note.label} </p> */}
+                    <select
+                        onChange={(e) => {
+                            handleEdit(note, "label", e.target.value as Label)
+                            console.log("label edited");
+                        }}>
+                        <option value={note.label}>{note.label}</option>
+                        <option value={Label.personal}>Personal</option>
+                        <option value={Label.study}>Study</option>
+                        <option value={Label.work}>Work</option>
+                        <option value={Label.other}>Other</option>
+                    </select>
                 </div>
                 ))}
             </div>
