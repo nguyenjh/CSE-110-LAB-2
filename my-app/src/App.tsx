@@ -20,22 +20,22 @@ function App() {
     const [createNote, setCreateNote] = useState(initialNote);
     
     const createNoteHandler = () => {
-        setCreateNote({
-            ...createNote,
-            id: notes.length,
-        })
+        console.log("in creatNoteHandler")
+        
+        setCreateNote({...createNote, id: notes.length + 1})
         console.log(createNote)
         setNotes(() => {
             return [...notes, createNote];
         })
-        console.log(notes)
     }
 
-    console.log(notes)
+    // console.log(notes)
 
     const [favoriteList, setFavoriteList] = useState(initList);
 
     const toggleFavorite = (note: Note) => {
+        console.log("in toggleFavorite")
+        
         note.favorite = !note.favorite
         setFavoriteList((favoriteList) => {
             if (favoriteList.includes(note)) {
@@ -48,12 +48,12 @@ function App() {
     
     return (
         <div className='app-container'>
-            <form className="note-form" onSubmit={createNoteHandler}>
+            <form className="note-form" onSubmit={createNoteHandler} action='#'>
                 <div>
                     <input
                         placeholder="Note Title"
                         onChange={(event) =>
-                        setCreateNote({ ...createNote, title: event.target.value })}
+                            setCreateNote({ ...createNote, title: event.target.value })}
                         required>
                     </input>
                 </div>
