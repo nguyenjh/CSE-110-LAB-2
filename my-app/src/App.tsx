@@ -1,15 +1,21 @@
 import React, { useState, useEffect, useContext } from 'react';
 import logo from './logo.svg';
 import './App.css';
-import { Label, Note } from "./types";          // Import the Label type from the appropriate module
-import { dummyNotesList } from './constants';   // Import the dummyNotesList from the appropriate module
+import { Label, Note } from "./types";
+import { dummyNotesList } from './constants';
 import ToggleTheme, { ClickCounter } from './hookExercise';
-import heartEmpty from './images/heart_empty.png'
-import heartFull from './images/heart_full.png'
+import heartEmpty from './images/heart_empty.png';
+import heartFull from './images/heart_full.png';
 import { ThemeContext, themes } from "./ThemeContext";
-// import { Favorite } from './hooks';
+import heartWhite from './images/white heart.png';
+
 const initList: Note[] = [];
 function App() {
+    const [currTheme, setCurrTheme] = useState(useContext(ThemeContext));
+    const toggleTheme = () => {
+      setCurrTheme(currTheme === themes.light ? themes.dark : themes.light);
+    };
+
     // Create new Note
     const [notes, setNotes] = useState(dummyNotesList); 
     const initialNote = {
@@ -75,9 +81,10 @@ function App() {
     };
     
     return (
+        // <ThemeContext.Provider value={currentTheme}>
         <div className='app-container' style={{
-          background: useContext(ThemeContext).background,
-          color: useContext(ThemeContext).foreground
+          background: currTheme === themes.light ? themes.light.background : "#333333",
+          color: currTheme.foreground
           }}>
             <form className="note-form" onSubmit={createNoteHandler} action='#'>
                 <div>
@@ -85,45 +92,77 @@ function App() {
                         placeholder="Note Title"
                         onChange={(event) =>
                         setCreateNote({ ...createNote, title: event.target.value })}
-                        required>
+                        required 
+                        style={{
+                          background: currTheme.background,
+                          color: currTheme.foreground,
+                          border: currTheme === themes.light ? "1px solid #000000" : "1px solid #ccc"
+                        }}>
                     </input>
                 </div>
                 <div>
                     <textarea
                         onChange={(event) =>
                             setCreateNote({ ...createNote, content: event.target.value })}
-                        required>
+                        required 
+                        style={{
+                          background: currTheme.background,
+                          color: currTheme.foreground,
+                          border: currTheme === themes.light ? "1px solid #000000" : "1px solid #ccc"
+                        }}
+                        placeholder="Note Content">
                     </textarea>
                 </div>
                 <div>
                     <select
                         onChange={(event) =>
                             setCreateNote({ ...createNote, label: event.target.value as Label })}
-                        required>
+                        required
+                        style={{
+                          background: currTheme.background,
+                          color: currTheme.foreground
+                        }}>
                         <option value={Label.personal}>Personal</option>
                         <option value={Label.study}>Study</option>
                         <option value={Label.work}>Work</option>
                         <option value={Label.other}>Other</option>
                     </select>
                 </div>
-                <div><button type="submit">Create Note</button></div>
-                <ToggleTheme></ToggleTheme>
+                <button type="submit"
+                style={{
+                  color: currTheme.background
+                }}>Create Note</button>
+                <button onClick={toggleTheme}
+                style={{
+                  color: currTheme.background
+                }}>Toggle Theme</button>
             </form>
             <div className="notes-grid">
                 {notes.map((note) => (
                 <div
                     key={note.id}
                     className="note-item"
+                    style={{
+                      background: currTheme.background,
+                      color: currTheme.foreground
+                    }}
                 >
                     <div className="notes-header">
                         <img
                             onClick={() => toggleFavorite(note)}
-                            style={{ width: 20 }}
-                            src={note.favorite ? heartFull  : heartEmpty} 
+                            // style={{ width: 20 }}
+                            style={{
+                              width: 20,
+                            }}
+                            src={note.favorite ? heartFull  : (currTheme === themes.dark ? heartWhite : heartEmpty)} 
                         >
                         </img>
                         <button
                             onClick={() => handleDelete(note)}
+                            style={{
+                              background: currTheme.background,
+                              color: currTheme.foreground
+                            }}
                         >x</button>
                     </div>
                     <h2 contentEditable="true" onInput={(e) => {
@@ -142,8 +181,12 @@ function App() {
                         onChange={(e) => {
                             handleEdit(note, "label", e.target.value as Label)
                             console.log("label edited");
+                        }}
+                        style={{
+                          background: currTheme.background,
+                          color: currTheme.foreground
                         }}>
-                        <option value={note.label}>{note.label}</option>
+                        <option value={note.label} >{note.label}</option>
                         <option value={Label.personal}>Personal</option>
                         <option value={Label.study}>Study</option>
                         <option value={Label.work}>Work</option>
@@ -152,14 +195,19 @@ function App() {
                 </div>
                 ))}
             </div>
-            <div className="favorited-notes">
-                {favoriteList.map((note) => {
-                    return (
-                        <li key={note.id}>{note.title}</li>
-                    );
-                })}
+            <div className="favoriteContainer">
+              <h2>List of Favorites:</h2>
+              <div className="favorited-notes">
+                  {favoriteList.map((note) => {
+                      return (
+                          <li key={note.id}>{note.title}</li>
+                      );
+                  })}
+              </div>
             </div>
+            
 	    </div>
+      // </ThemeContext.Provider>
         // <div className='app-container'>
         //     <form className="note-form">
         //         <div><input placeholder="Note Title"></input></div>
