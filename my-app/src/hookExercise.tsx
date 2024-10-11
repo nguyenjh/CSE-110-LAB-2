@@ -26,7 +26,7 @@ function ToggleTheme() {
     return (
         <ThemeContext.Provider value={currentTheme}>
             <button onClick={toggleTheme}> Toggle Theme </button>
-            <ClickCounter />
+            {/* <ClickCounter /> */}
         </ThemeContext.Provider>
     );
 }
